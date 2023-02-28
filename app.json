@@ -26,6 +26,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "owner": "luhad-tech"
+    "owner": "luhad-tech",
+    "extra": {
+      "eas": {
+        "projectId": "e2752d3b-51c2-48bb-bb77-1c316c8e16c0"
+      }
+    }
   }
 }
