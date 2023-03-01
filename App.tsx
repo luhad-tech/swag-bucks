@@ -29,15 +29,16 @@ function MainView() {
   const [reload, setReload] = useState(false);
   useEffect(() => {
     const pb = new PocketBase(process.env.POCKETBASE_URL);
-    try {
-      (async () => {
+    (async () => {
+      try {
         setData(
           await pb.collection("display").getFirstListItem('component="body"')
         );
-      })();
-    } catch (error) {
-      console.log(error);
-    }
+      } catch (error) {
+        console.log(error);
+        console.log(error.isAbort);
+      }
+    })();
     return () => {};
   }, [reload]);
   return (
