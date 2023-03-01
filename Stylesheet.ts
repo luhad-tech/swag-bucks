@@ -35,8 +35,9 @@ export const styles = StyleSheet.create<Styles>({
     textAlign: "center",
   },
   body: {
-	flex: 1,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "column",
   },
 });

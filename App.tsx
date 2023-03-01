@@ -1,11 +1,13 @@
 import { StatusBar } from "expo-status-bar";
-import { Text, View, useColorScheme } from "react-native";
+import { Text, View, useColorScheme, Button } from "react-native";
 import {
   useSafeAreaInsets,
   SafeAreaProvider,
 } from "react-native-safe-area-context";
 import ThemedText from "./components/ThemedText";
 import { styles } from "./Stylesheet";
+import PocketBase, { Record } from "pocketbase";
+import { useEffect, useState } from "react";
 
 export default function App() {
   const colorScheme = useColorScheme();
@@ -23,6 +25,21 @@ export default function App() {
 
 function MainView() {
   const insets = useSafeAreaInsets();
+  const [data, setData] = useState<Record>(null);
+  const [reload, setReload] = useState(false);
+  useEffect(() => {
+    const pb = new PocketBase(process.env.POCKETBASE_URL);
+    try {
+      (async () => {
+        setData(
+          await pb.collection("display").getFirstListItem('component="body"')
+        );
+      })();
+    } catch (error) {
+      console.log(error);
+    }
+    return () => {};
+  }, [reload]);
   return (
     <>
       <View style={[styles.center, { paddingTop: insets.top }]}>
@@ -33,8 +50,11 @@ function MainView() {
       </View>
       <View style={[styles.body]}>
         <ThemedText style={[{ fontSize: 25, fontWeight: "bold" }]}>
-          {"<SomethingGoesHere/>"}
+          {data ? data.value : "Loading..."}
         </ThemedText>
+        <View>
+          <Button onPress={() => setReload(!reload)} title="Reload" />
+        </View>
       </View>
     </>
   );
