@@ -1,12 +1,3 @@
-# Project: Swag Bucks
-Employee credit system, official name is TBD.
+# Unstable Feature Tests
 
-## To Do:
-- [x] Use Device Theme
-- [ ] Add Luhad logos (Until we get branding for official product)
-- [x] Integrate Pocket Base
-- [ ] Add Leantime project
-- [ ] Create forms for managing DB.
-- [ ] Authentication via Pocket Base
-- [ ] Investigate the purchase of additional development materials
-- [ ] Discuss business organization & finance with M. Hancock
+This branch was made to test some expo API features in a way to not harm the main branch. This branch is not to be merged with any branches or considered to be a version of the app.
