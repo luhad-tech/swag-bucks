@@ -4,6 +4,7 @@ import {
   useSafeAreaInsets,
   SafeAreaProvider,
 } from "react-native-safe-area-context";
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import ThemedText from "./components/ThemedText";
 import { styles } from "./Stylesheet";
 import PocketBase, { Record } from "pocketbase";
