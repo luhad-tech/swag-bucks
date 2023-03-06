@@ -13,6 +13,7 @@
     "@expo/webpack-config": "^18.0.1",
     "@types/react": "~18.0.27",
     "expo": "~48.0.4",
+    "expo-auth-session": "^4.0.3",
     "expo-sensors": "^12.1.1",
     "expo-status-bar": "~1.4.4",
     "expo-system-ui": "~2.2.1",

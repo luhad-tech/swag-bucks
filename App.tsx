@@ -1,38 +1,48 @@
+import * as React from 'react';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button } from 'react-native';
+import PocketBase, { Record } from "pocketbase";
+const pb = new PocketBase(process.env.POCKETBASE_URL);
 
-import ThemedText from "./components/ThemedText";
-import { styles } from "./Stylesheet";
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
-import { Barometer } from 'expo-sensors';
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint: 'https://github.com/settings/connections/applications/5603b23f22a6a4a28e62',
+};
 
 export default function App() {
-  const [{ pressure, relativeAltitude }, setData] = useState({ pressure: 0, relativeAltitude: 0 });
-  const [subscription, setSubscription] = useState(null);
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: '5603b23f22a6a4a28e62',
+      scopes: ['identity'],
+      redirectUri: makeRedirectUri({
+        scheme: 'exp://localhost:19000/--/*'
+      }),
+    },
+    discovery
+  );
 
-  const toggleListener = () => {
-    subscription ? unsubscribe() : subscribe();
-  };
-
-  const subscribe = () => {
-    setSubscription(Barometer.addListener(setData));
-  };
-
-  const unsubscribe = () => {
-    subscription && subscription.remove();
-    setSubscription(null);
-  };
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      const { code } = response.params;
+      pb.collection('users').authWithOAuth2(
+        "github",
+        code,
+        // pass optional user create data
+        {
+            emailVisibility: false,
+        }
+    }
+  }, [response]);
 
   return (
-    <View style={styles.wrapper}>
-      <Text>Barometer: Listener {subscription ? 'ACTIVE' : 'INACTIVE'}</Text>
-      <Text>Pressure: {pressure} hPa</Text>
-      <Text>
-        Relative Altitude:{' '}
-        {Platform.OS === 'ios' ? `${relativeAltitude} m` : `Only available on iOS`}
-      </Text>
-      <TouchableOpacity onPress={toggleListener} style={styles.button}>
-        <Text>Toggle listener</Text>
-      </TouchableOpacity>
-    </View>
+    <Button
+      disabled={!request}
+      title="Login"
+      onPress={() => {
+        promptAsync();
+      }}
+    />
   );
 }
