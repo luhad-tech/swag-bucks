@@ -3,61 +3,63 @@ import { client } from "../utils/pocketbase";
 import { stylesheet } from "../utils/stylesheet";
 import { useEffect, useState } from "react";
 import { AuthProviderInfo } from "pocketbase";
+import 'react-native-url-polyfill/auto'
+import { createClient } from '@supabase/supabase-js'
 
-const loginOAuth = async (provider: AuthProviderInfo) => {
-  try {
-    const res = await client
-      .collection("users")
-      .authWithOAuth2(
-        provider.name,
-        provider.codeChallenge,
-        provider.codeVerifier,
-        provider.authUrl
-      );
+// Create a single supabase client for interacting with your database
+const supabase = createClient('https://fzrgfqvfjbalwvolbanv.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6cmdmcXZmamJhbHd2b2xiYW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzgxMjgzMTcsImV4cCI6MTk5MzcwNDMxN30.KYCFlVtWLYh0JxlLSkuAyi_TJjpQ7Du_aUg4KxMOH7U')
 
-    console.log(res);
-  } catch (err) {
-    console.log(err);
-  }
+
+async function signInWithGitHub() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+  })
+  console.log(data);
+}
+
+
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+
+WebBrowser.maybeCompleteAuthSession();
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint: 'https://github.com/settings/connections/applications/b21d43a38d00da4a94e6',
 };
 
-export default function Page() {
-  const [data, setData] = useState<AuthProviderInfo[]>();
-  useEffect(() => {
-    (async () => {
-      try {
-        const results = await client.collection("users").listAuthMethods();
-        setData(results.authProviders);
-      } catch (err) {
-        console.log(err);
-        setData(err);
-      }
-    })();
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'b21d43a38d00da4a94e6',
+      scopes: ['identity'],
+      redirectUri: makeRedirectUri({
+        scheme: 'exp://localhost:19000/--/*'
+      }),
+    },
+    discovery
+  );
 
-    return () => {};
-  }, []);
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      const { code } = response.params;
+      console.log(code)
+ 
+    };
+  }, [response]);
+
   return (
-    <View style={stylesheet.container}>
-      <View style={stylesheet.main}>
-        <Text style={stylesheet.title}>Hello World</Text>
-        <View style={stylesheet.subtitle}>
-          {data ? (
-            data.map((provider) => {
-              const name =
-                provider.name.charAt(0).toUpperCase() + provider.name.slice(1);
-              return (
-                <Button
-                  onPress={() => loginOAuth(provider)}
-                  key={name}
-                  title={name}
-                />
-              );
-            })
-          ) : (
-            <Text>Loading...</Text>
-          )}
-        </View>
-      </View>
-    </View>
+      <Button
+    disabled={!request}
+    title="Login making this longger bc I am toolazy to figure out the safearea thing and I can't test if the button works :)"
+    onPress={() => {
+      promptAsync();
+    }}
+  />
+   
   );
 }
+
