@@ -1,6 +1,13 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, ViewStyle, TextStyle } from "react-native";
 
-export const stylesheet = StyleSheet.create({
+interface Styles {
+  container: ViewStyle;
+  main: ViewStyle;
+  title: TextStyle;
+  subtitle: ViewStyle;
+}
+
+export const stylesheet = StyleSheet.create<Styles>({
   container: {
     flex: 1,
     alignItems: "center",
@@ -17,7 +24,7 @@ export const stylesheet = StyleSheet.create({
     fontWeight: "bold",
   },
   subtitle: {
-    fontSize: 36,
-    color: "#38434D",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
